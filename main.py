@@ -7,20 +7,23 @@
 #
 ###############################################################################
 
-import matplotlib as mpl
-from mpl_toolkits.mplot3d import Axes3D
+# import matplotlib as mpl
+# from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pyplot as plt
-import constants as cst
+from scipy import constants
+# import constants as cst
 from particle import Particle
-plt.rcParams["figure.figsize"] = (9,8)
-plt.rcParams['font.size'] = 18
-
+# plt.rcParams["figure.figsize"] = (9, 8)
+plt.rcParams['font.size'] = 14
+print('proton cyclotron rotation test case')
 N = 1       # Number of particles
 
 # Parameters and fields
-charge = cst.elemCharge
-mass = cst.Mp
+charge = constants.e
+# charge = cst.elemCharge
+mass = constants.m_p #  cst.Mp
+print(f"Mp {mass:g} {constants.m_p}")
 E0 = np.array((0, 0, 0))
 B0 = np.array((0, 0, 1))
 w0 = np.abs(charge) * np.sqrt(np.sum(B0*B0, axis=0)) / mass
@@ -49,48 +52,54 @@ vx_error = np.abs(vx - vx_th)
 print(vx_error.max() / vx.max())
 vy_th = 200 * np.sin(w0*t + np.pi)
 vy_error = np.abs(vy - vy_th)
-print(vy_error.max() / vy.max())
+print(f"vy_error_max / vymax {vy_error.max() / vy.max():2g}")
 
 # Outputs
-## Speed along x
-plt.plot(t, vx, label='numeric')
-plt.plot(t, vx_th, label='analytic')
-plt.plot(t, vx_error, label='erreur absolue')
-plt.xlabel('$t$ [s]')
-plt.ylabel('$v_x$ [m/s]')
-plt.legend()
-plt.xlim((t[0], t[-1]))
-plt.tight_layout()
+#   Speed along x
+# fig = plt.figure()
+fig, axs = plt.subplots(2, 2, figsize=(9, 9), tight_layout=True)
+
+axs[0, 0].set_title('Speed along x')
+axs[0, 0].plot(t, vx, label='numeric')
+axs[0, 0].plot(t, vx_th, label='analytic')
+axs[0, 0].plot(t, vx_error, label='erreur absolue')
+axs[0, 0].set_xlabel('$t$ [s]')
+axs[0, 0].set_ylabel('$v_x$ [m/s]')
+axs[0, 0].legend()
+axs[0, 0].set_xlim((t[0], t[-1]))
+# axs[0, 0].tight_layout()
 # plt.savefig('test_vx.png')
-plt.show()
 
-## Speed along y
-plt.plot(t, vy, label='numeric')
-plt.plot(t, vy_th, label='analytic')
-plt.plot(t, vy_error, label='erreur absolue')
-plt.xlabel('$t$ [s]')
-plt.ylabel('$v_y$ [m/s]')
-plt.legend()
-plt.xlim((t[0], t[-1]))
-plt.tight_layout()
+axs[0, 1].set_title('Speed along y')
+axs[0, 1].plot(t, vy, label='numeric')
+axs[0, 1].plot(t, vy_th, label='analytic')
+axs[0, 1].plot(t, vy_error, label='erreur absolue')
+axs[0, 1].set_xlabel('$t$ [s]')
+axs[0, 1].set_ylabel('$v_y$ [m/s]')
+axs[0, 1].legend()
+axs[0, 1].set_xlim((t[0], t[-1]))
+# axs[0, 1].tight_layout()
 # plt.savefig('test_vy.png')
-plt.show()
+#plt.show()
 
-## 3D trajectory
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-ax.plot(x*1e6, y*1e6, z)
-ax.set_xlabel('$x$ [µm]')
-ax.set_ylabel('$y$ [µm]')
-ax.set_zlabel('$z$ [m]')
+# 3D trajectory
+# fig2 = plt.figure()
+# axs[1, 0] = fig2.add_subplot(projection='3d')
+# ax = fig.gca(projection='3d')
+axs[1, 0].remove()
+axs[1, 0] = fig.add_subplot(2,2,3,projection='3d')
+axs[0, 1].set_title('3D trajectory')
+axs[1, 0].plot(x*1e6, y*1e6, z)
+axs[1, 0].set_xlabel('$x$ [µm]')
+axs[1, 0].set_ylabel('$y$ [µm]')
+axs[1, 0].set_zlabel('$z$ [m]')
 # plt.savefig('test_3d.png')
-plt.show()
 
-## Energy vs. time
-plt.plot(t, E)
-plt.xlabel('$t$ [s]')
-plt.ylabel('$E_c$ [J]')
-plt.xlim((t[0], t[-1]))
-plt.tight_layout()
+# # Energy vs. time
+axs[1, 1].plot(t, E)
+axs[1, 1].set_xlabel('$t$ [s]')
+axs[1, 1].set_ylabel('$E_c$ [J]')
+axs[1, 1].set_xlim((t[0], t[-1]))
+# plt.tight_layout()
 # plt.savefig('test_E.png')
 plt.show()
